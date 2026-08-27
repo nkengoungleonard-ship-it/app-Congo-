@@ -109,6 +109,41 @@ def logout():
     logout_user()
     return redirect(url_for('main.login'))
 
+
+# ---------- MON PROFIL (tout admin connecté peut modifier ses propres infos) ----------
+
+@main.route('/mon-profil', methods=['GET', 'POST'])
+@login_required
+def mon_profil():
+    if request.method == 'POST':
+        nouveau_nom = request.form.get('nom', '').strip()
+        nouvel_email = request.form.get('email', '').strip()
+        mot_de_passe_actuel = request.form.get('mot_de_passe_actuel', '')
+        nouveau_mot_de_passe = request.form.get('nouveau_mot_de_passe', '').strip()
+
+        if not current_user.check_password(mot_de_passe_actuel):
+            flash("Mot de passe actuel incorrect.", "danger")
+            return redirect(url_for('main.mon_profil'))
+
+        if nouvel_email and nouvel_email != current_user.email:
+            existant = Administrateur.query.filter_by(email=nouvel_email).first()
+            if existant:
+                flash("Cet email est déjà utilisé par un autre compte.", "danger")
+                return redirect(url_for('main.mon_profil'))
+            current_user.email = nouvel_email
+
+        if nouveau_nom:
+            current_user.nom = nouveau_nom
+
+        if nouveau_mot_de_passe:
+            current_user.set_password(nouveau_mot_de_passe)
+
+        db.session.commit()
+        flash("Profil mis à jour avec succès.", "success")
+        return redirect(url_for('main.mon_profil'))
+
+    return render_template('mon_profil.html')
+
 # ---------- GESTION DES ADMINISTRATEURS (SUPER ADMIN UNIQUEMENT) ----------
 
 @main.route('/administrateurs')

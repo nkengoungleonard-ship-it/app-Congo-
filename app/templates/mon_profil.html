@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Mon profil - WaterLife Congo{% endblock %}
+
+{% block content %}
+
+<div class="form-box">
+    <h2>Mon profil</h2>
+    <p style="color:#666; margin-top:-10px; margin-bottom: 20px;">
+        Rôle actuel : <strong>{{ 'Super Administrateur' if current_user.est_super_admin else 'Administrateur' }}</strong>
+    </p>
+
+    <form method="POST">
+        <div class="form-group">
+            <label>Nom</label>
+            <input type="text" name="nom" value="{{ current_user.nom }}" required>
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" value="{{ current_user.email }}" required>
+        </div>
+        <div class="form-group">
+            <label>Nouveau mot de passe (laisser vide pour ne pas changer)</label>
+            <div style="position: relative;">
+                <input type="password" name="nouveau_mot_de_passe" id="nouveauMdp" placeholder="••••••••" style="width: 100%; box-sizing: border-box; padding-right: 40px;">
+                <span onclick="basculerAffichage('nouveauMdp', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; user-select: none; font-size: 18px;">👁️</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Mot de passe actuel (obligatoire pour confirmer)</label>
+            <div style="position: relative;">
+                <input type="password" name="mot_de_passe_actuel" id="mdpActuel" required placeholder="••••••••" style="width: 100%; box-sizing: border-box; padding-right: 40px;">
+                <span onclick="basculerAffichage('mdpActuel', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; user-select: none; font-size: 18px;">👁️</span>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-vert btn-full">Enregistrer les modifications</button>
+    </form>
+</div>
+
+<script>
+function basculerAffichage(idChamp, icone) {
+    const champ = document.getElementById(idChamp);
+    if (champ.type === 'password') {
+        champ.type = 'text';
+        icone.textContent = '🙈';
+    } else {
+        champ.type = 'password';
+        icone.textContent = '👁️';
+    }
+}
+</script>
+
+{% endblock %}

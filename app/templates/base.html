@@ -56,6 +56,7 @@
         <a href="{{ url_for('main.ajouter_produit') }}">{{ t('nav_produit') }}</a>
         <a href="{{ url_for('main.sauvegardes') }}">{{ t('nav_sauvegardes') }}</a>
         <a href="{{ url_for('main.liste_stock') }}">Gestion de stock</a>
+        <a href="{{ url_for('main.mon_profil') }}">Mon profil</a>
         {% if current_user.est_super_admin %}
         <a href="{{ url_for('main.liste_administrateurs') }}">{{ t('nav_admins') }}</a>
         {% endif %}
