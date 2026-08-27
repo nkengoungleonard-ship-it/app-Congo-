@@ -195,6 +195,32 @@ def supprimer_administrateur(id):
     return redirect(url_for('main.liste_administrateurs'))
 
 
+@main.route('/administrateurs/<int:id>/promouvoir')
+@login_required
+@super_admin_required
+def promouvoir_administrateur(id):
+    admin = Administrateur.query.get_or_404(id)
+    admin.role = 'super_admin'
+    db.session.commit()
+    flash(f"'{admin.nom}' est maintenant Super Administrateur.", "success")
+    return redirect(url_for('main.liste_administrateurs'))
+
+
+@main.route('/administrateurs/<int:id>/retrograder')
+@login_required
+@super_admin_required
+def retrograder_administrateur(id):
+    if id == current_user.id:
+        flash("Tu ne peux pas retirer ton propre statut de Super Administrateur.", "danger")
+        return redirect(url_for('main.liste_administrateurs'))
+
+    admin = Administrateur.query.get_or_404(id)
+    admin.role = 'admin'
+    db.session.commit()
+    flash(f"'{admin.nom}' n'est plus Super Administrateur.", "info")
+    return redirect(url_for('main.liste_administrateurs'))
+
+
 # ---------- TABLEAU DE BORD ----------
 
 @main.route('/')

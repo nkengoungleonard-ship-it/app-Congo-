@@ -32,6 +32,11 @@
             </td>
             <td>{{ admin.date_creation.strftime('%d/%m/%Y') }}</td>
             <td>
+                {% if not admin.est_super_admin %}
+                <a href="{{ url_for('main.promouvoir_administrateur', id=admin.id) }}" class="btn" style="padding:6px 12px; font-size:12px; background-color:#8a6d1d;" onclick="return confirm('Promouvoir {{ admin.nom }} en Super Administrateur ?');">Promouvoir</a>
+                {% elif admin.id != current_user.id %}
+                <a href="{{ url_for('main.retrograder_administrateur', id=admin.id) }}" class="btn" style="padding:6px 12px; font-size:12px; background-color:#999;" onclick="return confirm('Retirer le statut Super Administrateur de {{ admin.nom }} ?');">Rétrograder</a>
+                {% endif %}
                 {% if admin.id != current_user.id %}
                 <a href="{{ url_for('main.supprimer_administrateur', id=admin.id) }}" class="btn" style="padding:6px 12px; font-size:12px; background-color:var(--rouge);" onclick="return confirm('{{ t('confirm_supprimer_admin') }}');">{{ t('btn_supprimer') }}</a>
                 {% else %}
