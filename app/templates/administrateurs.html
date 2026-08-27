@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{ t('admins_titre') }} - WaterLife Congo{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>{{ t('admins_titre') }}</h1>
+    <a href="{{ url_for('main.ajouter_administrateur') }}" class="btn btn-vert">{{ t('btn_ajouter_admin') }}</a>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>{{ t('label_nom') }}</th>
+            <th>Email</th>
+            <th>{{ t('th_role') }}</th>
+            <th>{{ t('th_date_creation') }}</th>
+            <th>{{ t('th_actions') }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for admin in administrateurs %}
+        <tr>
+            <td>{{ admin.nom }}</td>
+            <td>{{ admin.email }}</td>
+            <td>
+                {% if admin.est_super_admin %}
+                    <span class="badge" style="background-color:#fdf1d8; color:#8a6d1d;">Super Admin</span>
+                {% else %}
+                    <span class="badge" style="background-color:#e3edf7; color:#1B6FA8;">Admin</span>
+                {% endif %}
+            </td>
+            <td>{{ admin.date_creation.strftime('%d/%m/%Y') }}</td>
+            <td>
+                {% if admin.id != current_user.id %}
+                <a href="{{ url_for('main.supprimer_administrateur', id=admin.id) }}" class="btn" style="padding:6px 12px; font-size:12px; background-color:var(--rouge);" onclick="return confirm('{{ t('confirm_supprimer_admin') }}');">{{ t('btn_supprimer') }}</a>
+                {% else %}
+                <span style="color:#999; font-size:12px;">{{ t('cest_toi') }}</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

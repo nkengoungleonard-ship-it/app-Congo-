@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ t('classement_titre') }} - WaterLife Congo{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>🏆 {{ t('classement_titre') }}</h1>
+</div>
+
+<p style="color:#666; margin-bottom:20px;">{{ t('classement_info') }}</p>
+
+{% if classement_liste %}
+<table>
+    <thead>
+        <tr>
+            <th>{{ t('th_rang') }}</th>
+            <th>{{ t('th_reference') }}</th>
+            <th>{{ t('th_nom') }}</th>
+            <th>{{ t('th_niveau') }}</th>
+            <th>{{ t('th_ville_zone') }}</th>
+            <th>{{ t('card_ca_mois') }}</th>
+            <th>{{ t('th_actions') }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in classement_liste %}
+        <tr>
+            <td style="font-size:18px; font-weight:bold; text-align:center;">
+                {% if loop.index == 1 %}🥇
+                {% elif loop.index == 2 %}🥈
+                {% elif loop.index == 3 %}🥉
+                {% else %}{{ loop.index }}
+                {% endif %}
+            </td>
+            <td>{{ c.reference }}</td>
+            <td>{{ c.prenom }} {{ c.nom }}</td>
+            <td>
+                {% if c.niveau == 'Coordinateur de Zone' %}
+                    <span class="badge" style="background-color:#fdf1d8; color:#8a6d1d;">{{ t('badge_coordinateur') }}</span>
+                {% else %}
+                    <span class="badge" style="background-color:#e3edf7; color:#1B6FA8;">{{ t('badge_vendeur') }}</span>
+                {% endif %}
+            </td>
+            <td>{{ c.ville or '-' }} {% if c.zone %} - {{ c.zone }}{% endif %}</td>
+            <td style="font-weight:bold;">{{ "%.0f"|format(c.chiffre_affaire_mois()) }} FCFA</td>
+            <td>
+                <a href="{{ url_for('main.detail_commercial', id=c.id) }}" class="btn" style="padding:6px 12px; font-size:12px;">{{ t('btn_voir') }}</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p style="color:#999; text-align:center; margin-top:30px;">{{ t('aucun_commercial') }}</p>
+{% endif %}
+
+{% endblock %}

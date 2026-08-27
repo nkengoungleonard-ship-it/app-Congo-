@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}{{ t('dashboard_title') }} - WaterLife Congo{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>{{ t('dashboard_title') }}</h1>
+    <a href="{{ url_for('main.ajouter_commercial') }}" class="btn btn-vert">{{ t('btn_ajouter_commercial') }}</a>
+</div>
+
+<div class="cards-row">
+    <div class="card card-bleu">
+        <h3>{{ t('card_nb_commerciaux') }}</h3>
+        <div class="valeur">{{ nombre_commerciaux }}</div>
+    </div>
+    <div class="card">
+        <h3>{{ t('card_ca_jour') }}</h3>
+        <div class="valeur">{{ "%.0f"|format(ca_global_jour) }} FCFA</div>
+    </div>
+    <div class="card">
+        <h3>{{ t('card_ca_mois') }}</h3>
+        <div class="valeur">{{ "%.0f"|format(ca_global_mois) }} FCFA</div>
+    </div>
+    <div class="card card-vert">
+        <h3>{{ t('card_ca_annee') }}</h3>
+        <div class="valeur">{{ "%.0f"|format(ca_global_annee) }} FCFA</div>
+    </div>
+</div>
+
+{% if alertes_paliers %}
+<div class="card" style="border-top: 4px solid var(--orange); margin-bottom: 25px;">
+    <h3>🔔 {{ t('alertes_paliers_titre') }}</h3>
+    <div style="margin-top:12px;">
+        {% for alerte in alertes_paliers %}
+        <div style="padding:10px 0; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div>
+                <a href="{{ url_for('main.detail_commercial', id=alerte.commercial.id) }}" style="color:var(--bleu-tres-fonce); font-weight:bold; text-decoration:none;">
+                    {{ alerte.commercial.prenom }} {{ alerte.commercial.nom }} ({{ alerte.commercial.reference }})
+                </a>
+                — {{ alerte.produit }}
+            </div>
+            <div style="font-size:13px; color:#666;">
+                {{ t('plus_que') }} <strong style="color:var(--orange);">{{ alerte.unites_restantes }}</strong> {{ t('unites_pour_palier') }} <strong>{{ (alerte.taux_suivant * 100)|round|int }}%</strong>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+<div class="cards-row">
+    <div class="card" style="border-top: 4px solid var(--bleu);">
+        <h3>{{ t('gros_titre') }} ({{ t('th_ca_mois') }})</h3>
+        <div class="valeur">{{ "%.0f"|format(ventes_gros_mois) }} FCFA</div>
+    </div>
+</div>
+<div class="cards-row">
+    <div class="card card-bleu">
+        <h3>{{ t('card_commissions_mois') }}</h3>
+        <div class="valeur">{{ "%.0f"|format(commission_totale_mois) }} FCFA</div>
+    </div>
+    <div class="card">
+        <h3>{{ t('card_bonus_coordinateurs') }}</h3>
+        <div class="valeur">{{ "%.0f"|format(bonus_equipe_total_mois) }} FCFA</div>
+    </div>
+    <div class="card">
+        <h3>{{ t('card_bonus_parrainage') }}</h3>
+        <div class="valeur">{{ "%.0f"|format(bonus_parrainage_total_mois) }} FCFA</div>
+    </div>
+    <div class="card card-vert">
+        <h3>{{ t('card_frais_inscription') }}</h3>
+        <div class="valeur">{{ "%.0f"|format(total_frais_inscription) }} FCFA</div>
+    </div>
+</div>
+
+<h2 style="color: var(--bleu-tres-fonce); margin-bottom: 15px;">💰 {{ t('revenu_net_section_titre') }}</h2>
+<div class="cards-row">
+    <div class="card card-vert">
+        <h3>{{ t('card_revenu_net_jour') }}</h3>
+        <div class="valeur">{{ "%.0f"|format(revenu_net_jour) }} FCFA</div>
+    </div>
+    <div class="card card-vert">
+        <h3>{{ t('card_revenu_net_mois') }}</h3>
+        <div class="valeur">{{ "%.0f"|format(revenu_net_mois) }} FCFA</div>
+    </div>
+    <div class="card card-vert">
+        <h3>{{ t('card_revenu_net_annee') }}</h3>
+        <div class="valeur">{{ "%.0f"|format(revenu_net_annee) }} FCFA</div>
+    </div>
+</div>
+
+<h2 style="color: var(--bleu-tres-fonce); margin-bottom: 15px;">{{ t('liste_commerciaux') }}</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>{{ t('th_reference') }}</th>
+            <th>{{ t('th_nom') }}</th>
+            <th>{{ t('th_niveau') }}</th>
+            <th>{{ t('th_ville_zone') }}</th>
+            <th>{{ t('th_ca_jour') }}</th>
+            <th>{{ t('th_ca_mois') }}</th>
+            <th>{{ t('th_ca_annee') }}</th>
+            <th>{{ t('th_statut') }}</th>
+            <th>{{ t('th_actions') }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in commerciaux %}
+        <tr>
+            <td>{{ c.reference }}</td>
+            <td>{{ c.prenom }} {{ c.nom }}</td>
+            <td>
+                {% if c.niveau == 'Coordinateur de Zone' %}
+                    <span class="badge" style="background-color:#fdf1d8; color:#8a6d1d;">{{ t('badge_coordinateur') }}</span>
+                {% else %}
+                    <span class="badge" style="background-color:#e3edf7; color:#1B6FA8;">{{ t('badge_vendeur') }}</span>
+                {% endif %}
+            </td>
+            <td>{{ c.ville }} {% if c.zone %} - {{ c.zone }}{% endif %}</td>
+            <td>{{ "%.0f"|format(c.chiffre_affaire_jour()) }} FCFA</td>
+            <td>{{ "%.0f"|format(c.chiffre_affaire_mois()) }} FCFA</td>
+            <td>{{ "%.0f"|format(c.chiffre_affaire_annee()) }} FCFA</td>
+            <td>
+                {% if c.actif %}
+                    <span class="badge badge-actif">{{ t('badge_actif') }}</span>
+                {% else %}
+                    <span class="badge badge-inactif">{{ t('badge_inactif') }}</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="{{ url_for('main.detail_commercial', id=c.id) }}" class="btn" style="padding:6px 12px; font-size:12px;">{{ t('btn_voir') }}</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="9" style="text-align:center; color:#999;">{{ t('aucun_commercial') }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

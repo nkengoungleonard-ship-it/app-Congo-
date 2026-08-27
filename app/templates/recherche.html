@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ t('recherche_titre') }} - WaterLife Congo{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>{{ t('recherche_titre') }}</h1>
+</div>
+
+<form method="GET" action="{{ url_for('main.recherche_commercial') }}" style="margin-bottom: 25px; display:flex; gap:10px; max-width:600px;">
+    <input type="text" name="q" value="{{ q }}" placeholder="{{ t('rechercher_placeholder') }}"
+           style="flex:1; padding:10px 12px; border:1px solid #ccc; border-radius:6px; font-size:14px;">
+    <button type="submit" class="btn btn-vert">{{ t('btn_rechercher') }}</button>
+</form>
+
+{% if q %}
+    {% if resultats %}
+    <table>
+        <thead>
+            <tr>
+                <th>{{ t('th_reference') }}</th>
+                <th>{{ t('th_nom') }}</th>
+                <th>{{ t('th_niveau') }}</th>
+                <th>{{ t('th_ville_zone') }}</th>
+                <th>{{ t('th_telephone') }}</th>
+                <th>{{ t('th_statut') }}</th>
+                <th>{{ t('th_actions') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in resultats %}
+            <tr>
+                <td>{{ c.reference }}</td>
+                <td>{{ c.prenom }} {{ c.nom }}</td>
+                <td>
+                    {% if c.niveau == 'Coordinateur de Zone' %}
+                        <span class="badge" style="background-color:#fdf1d8; color:#8a6d1d;">{{ t('badge_coordinateur') }}</span>
+                    {% else %}
+                        <span class="badge" style="background-color:#e3edf7; color:#1B6FA8;">{{ t('badge_vendeur') }}</span>
+                    {% endif %}
+                </td>
+                <td>{{ c.ville or '-' }} {% if c.zone %} - {{ c.zone }}{% endif %}</td>
+                <td>{{ c.telephone or '-' }}</td>
+                <td>
+                    {% if c.actif %}
+                        <span class="badge badge-actif">{{ t('badge_actif') }}</span>
+                    {% else %}
+                        <span class="badge badge-inactif">{{ t('badge_inactif') }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ url_for('main.detail_commercial', id=c.id) }}" class="btn" style="padding:6px 12px; font-size:12px;">{{ t('btn_voir') }}</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p style="color:#999; text-align:center; margin-top:30px;">{{ t('aucun_resultat') }}</p>
+    {% endif %}
+{% else %}
+    <p style="color:#999; text-align:center; margin-top:30px;">{{ t('recherche_invite') }}</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+{% block title %}{{ commercial.prenom }} {{ commercial.nom }} - WaterLife Congo{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div style="display:flex; align-items:center; gap:15px;">
+        {% if commercial.photo_filename %}
+        <img src="{{ url_for('static', filename='uploads/commerciaux/' + commercial.photo_filename) }}"
+             alt="Photo" style="width:60px; height:60px; border-radius:50%; object-fit:cover; border:3px solid var(--orange);">
+        {% else %}
+        <div style="width:60px; height:60px; border-radius:50%; background-color:var(--bleu-tres-fonce); color:white; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:bold;">
+            {{ commercial.prenom[0] }}{{ commercial.nom[0] }}
+        </div>
+        {% endif %}
+        <h1>{{ commercial.prenom }} {{ commercial.nom }}</h1>
+    </div>
+    <div>
+        <a href="{{ url_for('main.fiche_pdf_commercial', id=commercial.id) }}" class="btn btn-gold" style="margin-right:10px;">📄 {{ t('btn_fiche_pdf') }}</a>
+        <a href="{{ url_for('main.liste_commerciaux') }}" class="btn">{{ t('retour_liste') }}</a>
+    </div>
+</div>
+
+<div class="cards-row">
+    <div class="card">
+        <h3>{{ t('th_reference_simple') }}</h3>
+        <div class="valeur" style="font-size:18px;">{{ commercial.reference }}</div>
+    </div>
+    <div class="card">
+        <h3>{{ t('label_niveau') }}</h3>
+        <div class="valeur" style="font-size:18px;">
+            {% if commercial.niveau == 'Coordinateur de Zone' %}
+                <span class="badge" style="background-color:#fdf1d8; color:#8a6d1d;">{{ t('badge_coordinateur') }}</span>
+            {% else %}
+                <span class="badge" style="background-color:#e3edf7; color:#1B6FA8;">{{ t('badge_vendeur') }}</span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="card">
+        <h3>{{ t('th_ville_zone') }}</h3>
+        <div class="valeur" style="font-size:18px;">{{ commercial.ville or '-' }}{% if commercial.zone %} - {{ commercial.zone }}{% endif %}</div>
+    </div>
+    <div class="card">
+        <h3>{{ t('label_statut') }}</h3>
+        <div class="valeur" style="font-size:18px;">
+            {% if commercial.actif %}
+                <span class="badge badge-actif">{{ t('badge_actif') }}</span>
+            {% else %}
+                <span class="badge badge-inactif">{{ t('badge_inactif') }}</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="cards-row">
+    <div class="card">
+        <h3>{{ t('label_telephone_simple') }}</h3>
+        <div class="valeur" style="font-size:18px;">{{ commercial.telephone or '-' }}</div>
+    </div>
+    <div class="card">
+        <h3>{{ t('label_frais_inscription') }}</h3>
+        <div class="valeur" style="font-size:18px;">
+            {% if commercial.frais_inscription_paye %}
+                <span class="badge badge-actif">{{ t('frais_payes') }}</span>
+            {% else %}
+                <span class="badge badge-inactif">{{ t('frais_non_payes') }}</span>
+            {% endif %}
+        </div>
+    </div>
+    {% if commercial.parrain %}
+    <div class="card">
+        <h3>{{ t('parraine_par') }}</h3>
+        <div class="valeur" style="font-size:16px;">{{ commercial.parrain.prenom }} {{ commercial.parrain.nom }} ({{ commercial.parrain.reference }})</div>
+    </div>
+    {% endif %}
+</div>
+
+{% if commercial.coordinateur %}
+<div class="cards-row">
+    <div class="card">
+        <h3>{{ t('rattache_coordinateur') }}</h3>
+        <div class="valeur" style="font-size:16px;">{{ commercial.coordinateur.prenom }} {{ commercial.coordinateur.nom }} ({{ commercial.coordinateur.reference }})</div>
+    </div>
+</div>
+{% endif %}
+
+<div class="cards-row">
+    <div class="card card-bleu">
+        <h3>{{ t('card_ca_jour') }}</h3>
+        <div class="valeur">{{ "%.0f"|format(commercial.chiffre_affaire_jour()) }} FCFA</div>
+    </div>
+    <div class="card">
+        <h3>{{ t('card_ca_mois') }}</h3>
+        <div class="valeur">{{ "%.0f"|format(commercial.chiffre_affaire_mois()) }} FCFA</div>
+    </div>
+    <div class="card card-vert">
+        <h3>{{ t('card_ca_annee') }}</h3>
+        <div class="valeur">{{ "%.0f"|format(commercial.chiffre_affaire_annee()) }} FCFA</div>
+    </div>
+</div>
+
+{% set progression = commercial.progression_paliers() %}
+{% if progression %}
+<div class="form-box" style="max-width:100%; margin-bottom:20px;">
+    <h2 style="text-align:left;">🎯 {{ t('progression_titre') }}</h2>
+    {% for p in progression %}
+    <div style="margin-bottom:15px;">
+        <div style="display:flex; justify-content:space-between; font-size:13px; color:#555; margin-bottom:4px;">
+            <span><strong>{{ p.produit }}</strong> — {{ p.unites }} {{ t('unites_vendues') }} ({{ (p.taux_actuel * 100)|round|int }}%)</span>
+            {% if p.taux_suivant %}
+            <span>{{ t('plus_que') }} <strong style="color:var(--orange);">{{ p.unites_restantes }}</strong> {{ t('unites_pour_palier') }} <strong>{{ (p.taux_suivant * 100)|round|int }}%</strong></span>
+            {% else %}
+            <span style="color:var(--vert-fonce); font-weight:bold;">{{ t('palier_max_atteint') }}</span>
+            {% endif %}
+        </div>
+        <div style="background-color:#eee; border-radius:6px; height:10px; overflow:hidden;">
+            {% if p.taux_suivant %}
+            <div style="background-color:var(--orange); height:100%; width:{{ (100 - (p.unites_restantes / (p.unites_restantes + p.unites) * 100))|round|int }}%;"></div>
+            {% else %}
+            <div style="background-color:var(--vert-fonce); height:100%; width:100%;"></div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% if commercial.bonus_parrainage_mois() > 0 %}
+<div class="cards-row">
+    <div class="card">
+        <h3>{{ t('bonus_parrainage_titre') }}</h3>
+        <div class="valeur">{{ "%.0f"|format(commercial.bonus_parrainage_mois()) }} FCFA</div>
+    </div>
+</div>
+{% endif %}
+
+{% if commercial.niveau == 'Coordinateur de Zone' %}
+<div class="cards-row">
+    <div class="card card-bleu">
+        <h3>{{ t('bonus_equipe_titre') }}</h3>
+        <div class="valeur">{{ "%.0f"|format(commercial.bonus_equipe_mois()) }} FCFA</div>
+    </div>
+    {% if commercial.equipe %}
+    <div class="card">
+        <h3>{{ t('taille_equipe') }}</h3>
+        <div class="valeur">{{ commercial.equipe|length }} {{ t('vendeurs_suffixe') }}</div>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="form-box" style="max-width:100%; margin-top:20px; margin-bottom:20px;">
+    <h2 style="text-align:left;">{{ t('changer_photo_titre') }}</h2>
+    <form method="POST" action="{{ url_for('main.changer_photo', id=commercial.id) }}" enctype="multipart/form-data" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <input type="file" name="photo" accept=".jpg,.jpeg,.png" required>
+        <button type="submit" class="btn">{{ t('btn_changer_photo') }}</button>
+    </form>
+</div>
+<div class="form-box" style="max-width:100%; margin-top:20px; margin-bottom:20px;">
+    <h2 style="text-align:left;">{{ t('gestion_niveau') }}</h2>
+
+    {% if commercial.niveau != 'Coordinateur de Zone' %}
+        <p style="margin-bottom:15px; color:#555;">
+            {{ t('texte_vendeur_simple') }}
+        </p>
+        <form method="POST" action="{{ url_for('main.promouvoir_coordinateur', id=commercial.id) }}"
+              onsubmit="return confirm('{{ t('confirm_promouvoir') }}');" style="max-width:400px;">
+            <div class="form-group">
+                <label>{{ t('label_zone_supervisee') }}</label>
+                <input type="text" name="zone_supervisee" value="{{ commercial.zone or '' }}" placeholder="Ex : Bacongo, Talangaï...">
+            </div>
+            <button type="submit" class="btn btn-gold">{{ t('btn_promouvoir') }}</button>
+        </form>
+    {% else %}
+        <p style="color:#3c763d; font-weight:bold;">
+            {{ t('texte_est_coordinateur') }}
+            {% if commercial.zone %} — {{ t('label_zone_supervisee') }} : <strong>{{ commercial.zone }}</strong>{% endif %}
+        </p>
+    {% endif %}
+
+    {% if commercial.niveau != 'Coordinateur de Zone' %}
+    <hr style="margin:20px 0; border:none; border-top:1px solid #eee;">
+    <h2 style="text-align:left;">{{ t('rattachement_titre') }}</h2>
+    <form method="POST" action="{{ url_for('main.rattacher_coordinateur', id=commercial.id) }}">
+        <div class="form-group">
+            <label>{{ t('label_coordinateur_zone') }}</label>
+            <select name="coordinateur_id">
+                <option value="">{{ t('option_aucun') }}</option>
+                {% for coord in coordinateurs_possibles %}
+                <option value="{{ coord.id }}" {% if commercial.coordinateur_id == coord.id %}selected{% endif %}>
+                    {{ coord.reference }} - {{ coord.prenom }} {{ coord.nom }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn">{{ t('btn_enregistrer_rattachement') }}</button>
+    </form>
+    {% endif %}
+</div>
+
+<h2 style="color: var(--bleu-tres-fonce); margin-bottom: 15px;">{{ t('historique_ventes') }}</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>{{ t('th_date') }}</th>
+            <th>{{ t('th_produit') }}</th>
+            <th>{{ t('th_quantite') }}</th>
+            <th>{{ t('th_montant') }}</th>
+            <th>{{ t('th_taux') }}</th>
+            <th>{{ t('th_commission') }}</th>
+            <th>{{ t('th_actions') }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for v in ventes %}
+        <tr>
+            <td>{{ v.date_vente.strftime('%d/%m/%Y %H:%M') }}</td>
+            <td>{{ v.produit.nom }}</td>
+            <td>{{ v.quantite }}</td>
+            <td>{{ "%.0f"|format(v.montant) }} FCFA</td>
+            <td>{{ "%.0f"|format(v.taux_applique * 100) }}%</td>
+            <td>{{ "%.0f"|format(v.commission_calculee) }} FCFA</td>
+            <td>
+                <a href="{{ url_for('main.modifier_vente', id=v.id) }}" class="btn" style="padding:6px 12px; font-size:12px;">{{ t('btn_modifier') }}</a>
+                <a href="{{ url_for('main.supprimer_vente', id=v.id) }}" class="btn" style="padding:6px 12px; font-size:12px; background-color:var(--rouge);" onclick="return confirm('{{ t('confirm_supprimer_vente') }}');">{{ t('btn_supprimer') }}</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="7" style="text-align:center; color:#999;">{{ t('aucune_vente') }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

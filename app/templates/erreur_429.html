@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trop de tentatives - WaterLife Congo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="login-page">
+    <div class="login-box" style="text-align:center;">
+        <div class="logo-title">
+            <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="WaterLife">
+            <div>
+                <span class="brand-water">Water</span><span class="brand-life">Life</span>
+            </div>
+        </div>
+        <h3 style="color:#c0392b; margin-top:20px;">⛔ Trop de tentatives</h3>
+        <p style="margin-top:15px;">
+            Vous avez effectué trop de tentatives de connexion en peu de temps.<br>
+            Veuillez patienter une minute avant de réessayer.
+        </p>
+        <a href="{{ url_for('main.login') }}" class="btn btn-full" style="display:inline-block; margin-top:20px;">
+            Réessayer
+        </a>
+    </div>
+</div>
+
+</body>
+</html>

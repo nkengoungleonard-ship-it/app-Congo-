@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Modifier le stock - WaterLife Congo{% endblock %}
+{% block content %}
+
+<div class="form-page">
+    <h2>Modifier le stock — {{ produit.nom }}</h2>
+
+    <div class="modifier-stock-bloc">
+        <h3>Stock initial</h3>
+        <p class="stock-info-actuel">Valeur actuelle : <strong>{{ produit.stock_initial }}</strong></p>
+        <form method="POST">
+            <input type="hidden" name="champ" value="stock_initial">
+            <div class="form-group">
+                <label>Nouveau stock initial</label>
+                <input type="number" name="valeur" min="0" value="{{ produit.stock_initial }}" required>
+            </div>
+            <button type="submit" class="btn btn-full">Enregistrer le stock initial</button>
+        </form>
+    </div>
+
+    <div class="modifier-stock-bloc">
+        <h3>Stock actuel</h3>
+        <p class="stock-info-actuel">Valeur actuelle : <strong>{{ produit.stock_actuel }}</strong></p>
+        <form method="POST">
+            <input type="hidden" name="champ" value="stock_actuel">
+            <div class="form-group">
+                <label>Nouveau stock actuel</label>
+                <input type="number" name="valeur" min="0" value="{{ produit.stock_actuel }}" required>
+            </div>
+            <button type="submit" class="btn btn-full">Enregistrer le stock actuel</button>
+        </form>
+    </div>
+
+    <a href="{{ url_for('main.liste_stock') }}" class="btn-annuler">← Retour au stock</a>
+</div>
+
+{% endblock %}

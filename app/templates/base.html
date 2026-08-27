@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="{{ langue_actuelle }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}WaterLife Congo{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    {% if current_user.is_authenticated %}
+    <header class="topbar">
+        <div class="topbar-left">
+            <button type="button" class="sidebar-toggle" onclick="document.getElementById('sidebarPrincipal').classList.toggle('ouvert')">☰</button>
+            <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="WaterLife" class="topbar-logo">
+            <div class="topbar-brand">
+                <span class="brand-water">Water</span><span class="brand-life">Life</span>
+                <span class="brand-sub">{{ t('brand_sub') }}</span>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <span class="topbar-user">👤 {{ current_user.nom }}</span>
+           <div class="lang-dropdown">
+                <button type="button" class="lang-dropdown-btn" onclick="document.getElementById('langMenu').classList.toggle('ouvert')">
+                    {% if langue_actuelle == 'fr' %}
+                        <img src="https://flagcdn.com/24x18/fr.png" alt="FR">
+                    {% else %}
+                        <img src="https://flagcdn.com/24x18/gb.png" alt="EN">
+                    {% endif %}
+                    <span class="lang-caret">▾</span>
+                </button>
+                <div class="lang-dropdown-menu" id="langMenu">
+                    <a href="{{ url_for('main.changer_langue', lang='fr') }}"
+                       class="{% if langue_actuelle == 'fr' %}lang-actif{% endif %}">
+                        <img src="https://flagcdn.com/24x18/fr.png" alt="FR"> Français
+                    </a>
+                    <a href="{{ url_for('main.changer_langue', lang='en') }}"
+                       class="{% if langue_actuelle == 'en' %}lang-actif{% endif %}">
+                        <img src="https://flagcdn.com/24x18/gb.png" alt="EN"> English
+                    </a>
+                </div>
+            </div>
+            <a href="{{ url_for('main.logout') }}" class="logout-link">{{ t('nav_deconnexion') }}</a>
+        </div>
+    </header>
+
+    <nav class="sidebar" id="sidebarPrincipal">
+        <a href="{{ url_for('main.dashboard') }}">{{ t('nav_dashboard') }}</a>
+        <a href="{{ url_for('main.liste_commerciaux') }}">{{ t('nav_commerciaux') }}</a>
+        <a href="{{ url_for('main.recherche_commercial') }}">{{ t('nav_recherche') }}</a>
+        <a href="{{ url_for('main.classement') }}">{{ t('nav_classement') }}</a>
+        <a href="{{ url_for('main.export_page') }}">{{ t('nav_export') }}</a>
+        <a href="{{ url_for('main.statistiques') }}">{{ t('nav_stats') }}</a>
+        <a href="{{ url_for('main.enregistrer_vente') }}">{{ t('nav_vente') }}</a>
+        <a href="{{ url_for('main.liste_ventes_gros') }}">{{ t('nav_gros') }}</a>
+        <a href="{{ url_for('main.ajouter_produit') }}">{{ t('nav_produit') }}</a>
+        <a href="{{ url_for('main.sauvegardes') }}">{{ t('nav_sauvegardes') }}</a>
+        <a href="{{ url_for('main.liste_stock') }}">Gestion de stock</a>
+        {% if current_user.est_super_admin %}
+        <a href="{{ url_for('main.liste_administrateurs') }}">{{ t('nav_admins') }}</a>
+        {% endif %}
+    </nav>
+    {% endif %}
+
+    <div class="page-wrapper {% if current_user.is_authenticated %}avec-sidebar{% endif %}">
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('click', function(event) {
+            const dropdown = document.querySelector('.lang-dropdown');
+            const menu = document.getElementById('langMenu');
+            if (dropdown && menu && !dropdown.contains(event.target)) {
+                menu.classList.remove('ouvert');
+            }
+        });
+    </script>
+
+</body>
+</html>

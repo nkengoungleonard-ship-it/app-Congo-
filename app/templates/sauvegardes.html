@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ t('sauvegardes_titre') }} - WaterLife Congo{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>{{ t('sauvegardes_titre') }}</h1>
+    <a href="{{ url_for('main.sauvegarde_manuelle') }}" class="btn btn-vert">{{ t('btn_creer_sauvegarde') }}</a>
+</div>
+
+<p style="color:#666; margin-bottom:20px;">{{ t('sauvegardes_info') }}</p>
+
+{% if backups %}
+<table>
+    <thead>
+        <tr>
+            <th>{{ t('th_date') }}</th>
+            <th>{{ t('th_nom_fichier') }}</th>
+            <th>{{ t('th_taille') }}</th>
+            <th>{{ t('th_actions') }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for b in backups %}
+        <tr>
+            <td>{{ b.date.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+            <td>{{ b.nom }}</td>
+            <td>{{ b.taille_ko }} Ko</td>
+            <td>
+                <a href="{{ url_for('main.telecharger_sauvegarde', nom_fichier=b.nom) }}" class="btn" style="padding:6px 12px; font-size:12px;">{{ t('btn_telecharger') }}</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p style="color:#999; text-align:center; margin-top:30px;">{{ t('aucune_sauvegarde') }}</p>
+{% endif %}
+
+{% endblock %}

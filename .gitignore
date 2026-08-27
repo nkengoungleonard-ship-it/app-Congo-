@@ -1,0 +1,24 @@
+# Environnement et secrets
+.env
+*.env
+
+# Base de données locale et sauvegardes
+instance/
+backups/
+*.db
+
+# Logs
+logs/
+*.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+env/
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db

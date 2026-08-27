@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{ t('modifier_vente_titre') }} - WaterLife Congo{% endblock %}
+
+{% block content %}
+
+<div class="form-box">
+    <h2>{{ t('modifier_vente_titre') }}</h2>
+
+    <form method="POST">
+        <div class="form-group">
+            <label>{{ t('label_commercial') }}</label>
+            <select name="commercial_id" required>
+                {% for c in commerciaux %}
+                <option value="{{ c.id }}" {% if c.id == vente.commercial_id %}selected{% endif %}>{{ c.reference }} - {{ c.prenom }} {{ c.nom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>{{ t('label_produit') }}</label>
+            <select name="produit_id" required>
+                {% for p in produits %}
+                <option value="{{ p.id }}" {% if p.id == vente.produit_id %}selected{% endif %}>{{ p.nom }} ({{ "%.0f"|format(p.prix_unitaire) }} FCFA)</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>{{ t('label_quantite') }}</label>
+            <input type="number" name="quantite" min="1" value="{{ vente.quantite }}" required>
+        </div>
+
+        <button type="submit" class="btn btn-vert btn-full">{{ t('btn_enregistrer_modifications') }}</button>
+    </form>
+</div>
+
+{% endblock %}

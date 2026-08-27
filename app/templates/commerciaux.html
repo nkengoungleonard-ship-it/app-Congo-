@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ t('nav_commerciaux') }} - WaterLife Congo{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>{{ t('nav_commerciaux') }}</h1>
+    <a href="{{ url_for('main.ajouter_commercial') }}" class="btn btn-vert">{{ t('btn_ajouter_commercial') }}</a>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>{{ t('th_reference') }}</th>
+            <th></th>
+            <th>{{ t('th_nom') }}</th>
+            <th>{{ t('th_telephone') }}</th>
+            <th>{{ t('th_ville_zone') }}</th>
+            <th>{{ t('th_date_recrutement') }}</th>
+            <th>{{ t('th_statut') }}</th>
+            <th>{{ t('th_actions') }}</th>
+        </tr>
+    </thead>
+    <tbody>
+       {% for c in commerciaux %}
+        <tr>
+            <td>
+                {% if c.photo_filename %}
+                <img src="{{ url_for('static', filename='uploads/commerciaux/' + c.photo_filename) }}" alt="Photo" style="width:32px; height:32px; border-radius:50%; object-fit:cover;">
+                {% else %}
+                <div style="width:32px; height:32px; border-radius:50%; background-color:var(--bleu-tres-fonce); color:white; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:bold;">
+                    {{ c.prenom[0] }}{{ c.nom[0] }}
+                </div>
+                {% endif %}
+            </td>
+            <td>{{ c.reference }}</td>
+            <td>{{ c.prenom }} {{ c.nom }}</td>
+            <td>{{ c.telephone or '-' }}</td>
+            <td>{{ c.ville or '-' }} {% if c.zone %} - {{ c.zone }}{% endif %}</td>
+            <td>{{ c.date_recrutement.strftime('%d/%m/%Y') }}</td>
+            <td>
+                {% if c.actif %}
+                    <span class="badge badge-actif">{{ t('badge_actif') }}</span>
+                {% else %}
+                    <span class="badge badge-inactif">{{ t('badge_inactif') }}</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="{{ url_for('main.detail_commercial', id=c.id) }}" class="btn" style="padding:6px 12px; font-size:12px;">{{ t('btn_voir') }}</a>
+                {% if c.actif %}
+                <a href="{{ url_for('main.desactiver_commercial', id=c.id) }}" class="btn" style="padding:6px 12px; font-size:12px; background-color:var(--rouge);" onclick="return confirm('Désactiver ce commercial ?');">{{ t('btn_desactiver') }}</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="7" style="text-align:center; color:#999;">{{ t('aucun_commercial') }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

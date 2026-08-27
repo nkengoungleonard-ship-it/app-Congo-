@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ t('gros_titre') }} - WaterLife Congo{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>{{ t('gros_titre') }}</h1>
+    <a href="{{ url_for('main.ajouter_vente_gros') }}" class="btn btn-vert">{{ t('btn_ajouter_gros') }}</a>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>{{ t('th_date') }}</th>
+            <th>{{ t('gros_client') }}</th>
+            <th>{{ t('gros_type') }}</th>
+            <th>{{ t('gros_contact') }}</th>
+            <th>{{ t('th_produit') }}</th>
+            <th>{{ t('th_quantite') }}</th>
+            <th>{{ t('th_montant') }}</th>
+            <th>{{ t('th_actions') }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for vg in ventes_gros %}
+        <tr>
+            <td>{{ vg.date_vente.strftime('%d/%m/%Y') }}</td>
+            <td>{{ vg.client_nom }}</td>
+            <td>
+                <span class="badge" style="background-color:#e3edf7; color:#1B6FA8;">{{ vg.client_type }}</span>
+            </td>
+            <td>{{ vg.client_contact or '-' }}</td>
+            <td>{{ vg.produit.nom }}</td>
+            <td>{{ vg.quantite }}</td>
+            <td style="font-weight:bold;">{{ "%.0f"|format(vg.montant_total) }} FCFA</td>
+            <td>
+                <a href="{{ url_for('main.supprimer_vente_gros', id=vg.id) }}" class="btn" style="padding:6px 12px; font-size:12px; background-color:var(--rouge);" onclick="return confirm('{{ t('confirm_supprimer_gros') }}');">{{ t('btn_supprimer') }}</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="8" style="text-align:center; color:#999;">{{ t('aucune_gros') }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

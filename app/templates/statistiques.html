@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ t('stats_titre') }} - WaterLife Congo{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>📈 {{ t('stats_titre') }}</h1>
+</div>
+
+<div class="card" style="margin-bottom: 25px;">
+    <h3>{{ t('stats_evolution_titre') }} {{ annee_actuelle }}</h3>
+    <canvas id="graphiqueCA" height="90"></canvas>
+</div>
+
+<div class="card" style="max-width: 500px; margin: 0 auto;">
+    <h3>{{ t('stats_repartition_titre') }}</h3>
+    <canvas id="graphiqueProduits" height="220"></canvas>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+const ctxCA = document.getElementById('graphiqueCA').getContext('2d');
+new Chart(ctxCA, {
+    type: 'line',
+    data: {
+        labels: {{ labels_mois|tojson }},
+        datasets: [{
+            label: 'Chiffre d\'affaire (FCFA)',
+            data: {{ donnees_ca_mois|tojson }},
+            borderColor: '#1B6FA8',
+            backgroundColor: 'rgba(46, 159, 224, 0.15)',
+            borderWidth: 3,
+            tension: 0.3,
+            fill: true,
+            pointBackgroundColor: '#F5A623',
+            pointRadius: 5
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, ticks: { callback: function(value) { return value.toLocaleString() + ' FCFA'; } } }
+        }
+    }
+});
+
+const ctxProduits = document.getElementById('graphiqueProduits').getContext('2d');
+new Chart(ctxProduits, {
+    type: 'doughnut',
+    data: {
+        labels: {{ labels_produits|tojson }},
+        datasets: [{
+            data: {{ donnees_quantite_produits|tojson }},
+            backgroundColor: ['#1B6FA8', '#F5A623', '#5BAE3D', '#0d3d5c', '#2E9FE0']
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } }
+    }
+});
+</script>
+
+{% endblock %}

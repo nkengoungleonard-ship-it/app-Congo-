@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}{{ t('form_ajouter_commercial') }} - WaterLife Congo{% endblock %}
+
+{% block content %}
+
+<div class="form-box" style="max-width: 550px;">
+    <h2>{{ t('form_ajouter_commercial') }}</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label>{{ t('label_nom') }}</label>
+            <input type="text" name="nom" required placeholder="Ex : Moukala">
+        </div>
+        <div class="form-group">
+            <label>{{ t('label_prenom') }}</label>
+            <input type="text" name="prenom" required placeholder="Ex : Jean">
+        </div>
+        <div class="form-group">
+            <label>{{ t('th_telephone') }}</label>
+            <input type="text" name="telephone" placeholder="Ex : 06 123 45 67">
+        </div>
+        <div class="form-group">
+            <label>{{ t('label_ville') }}</label>
+            <input type="text" name="ville" placeholder="Ex : Brazzaville">
+        </div>
+        <div class="form-group">
+            <label>{{ t('label_zone') }}</label>
+            <input type="text" name="zone" placeholder="Ex : Bacongo">
+        </div>
+
+        <div class="form-group">
+            <label>{{ t('label_photo') }}</label>
+            <input type="file" name="photo" accept=".jpg,.jpeg,.png">
+        </div>
+
+        <div class="form-group">
+            <label>{{ t('label_parrain') }}</label>
+            <select name="parrain_id">
+                <option value="">{{ t('option_aucun_parrain') }}</option>
+                {% for p in parrains_possibles %}
+                <option value="{{ p.id }}">{{ p.reference }} - {{ p.prenom }} {{ p.nom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group" style="display:flex; align-items:center; gap:10px;">
+            <input type="checkbox" name="frais_inscription_paye" id="frais" checked style="width:auto;">
+            <label for="frais" style="margin:0;">{{ t('label_frais_check') }}</label>
+        </div>
+
+        <button type="submit" class="btn btn-vert btn-full">{{ t('btn_enregistrer_commercial') }}</button>
+    </form>
+</div>
+
+{% endblock %}

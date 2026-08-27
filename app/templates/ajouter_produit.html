@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ t('form_ajouter_produit') }} - WaterLife Congo{% endblock %}
+
+{% block content %}
+
+<div class="form-box">
+    <h2>{{ t('form_ajouter_produit') }}</h2>
+
+    <form method="POST">
+        <div class="form-group">
+            <label>{{ t('label_nom_produit') }}</label>
+            <input type="text" name="nom" required placeholder="Ex : Méthadole Crème Gel">
+        </div>
+        <div class="form-group">
+            <label>{{ t('label_prix') }}</label>
+            <input type="number" step="0.01" name="prix_unitaire" required placeholder="Ex : 3500">
+        </div>
+
+        <button type="submit" class="btn btn-vert btn-full">{{ t('btn_enregistrer_produit') }}</button>
+    </form>
+</div>
+
+{% endblock %}

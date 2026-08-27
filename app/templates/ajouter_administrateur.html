@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}{{ t('btn_ajouter_admin') }} - WaterLife Congo{% endblock %}
+
+{% block content %}
+
+<div class="form-box">
+    <h2>{{ t('btn_ajouter_admin') }}</h2>
+
+    <form method="POST">
+        <div class="form-group">
+            <label>{{ t('label_nom') }}</label>
+            <input type="text" name="nom" required placeholder="Ex : Jean Moukala">
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" required placeholder="admin@waterlife.com">
+        </div>
+        <div class="form-group">
+            <label>{{ t('label_mdp') }}</label>
+            <input type="password" name="mot_de_passe" required placeholder="••••••••">
+        </div>
+        <div class="form-group">
+            <label>{{ t('th_role') }}</label>
+            <select name="role">
+                <option value="admin">Admin</option>
+                <option value="super_admin">Super Admin</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-vert btn-full">{{ t('btn_enregistrer_admin') }}</button>
+    </form>
+</div>
+
+{% endblock %}

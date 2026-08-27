@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - WaterLife Congo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="login-page">
+    <div class="login-box">
+        <div class="logo-title">
+            <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="WaterLife">
+            <div>
+                <span class="brand-water">Water</span><span class="brand-life">Life</span>
+            </div>
+            <span class="brand-sub">{{ t('login_title') }}</span>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <div class="form-group">
+               <label>{{ t('label_email') }}</label>
+                <input type="email" name="email" required placeholder="admin@waterlife.com">
+            </div>
+            <div class="form-group">
+               <label>{{ t('label_mdp') }}</label>
+               <div class="password-wrapper">
+                   <input type="password" name="mot_de_passe" id="mot_de_passe" required placeholder="••••••••">
+                   <span class="toggle-password" onclick="togglePassword()" id="togglePasswordIcon">👁️</span>
+               </div>
+            </div>
+           <button type="submit" class="btn btn-full">{{ t('btn_connexion') }}</button>
+        </form>
+    </div>
+</div>
+
+<script>
+function togglePassword() {
+    const input = document.getElementById('mot_de_passe');
+    const icon = document.getElementById('togglePasswordIcon');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = '🙈';
+    } else {
+        input.type = 'password';
+        icon.textContent = '👁️';
+    }
+}
+</script>
+
+</body>
+</html>
