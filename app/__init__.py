@@ -24,6 +24,10 @@ def create_app():
         # postgres:// ; SQLAlchemy 2.x exige le préfixe postgresql://
         if database_url.startswith('postgres://'):
             database_url = database_url.replace('postgres://', 'postgresql://', 1)
+        # psycopg (v3) est installé, pas psycopg2 : on force le pilote
+        # explicitement pour que SQLAlchemy n'essaie pas d'importer psycopg2.
+        if database_url.startswith('postgresql://'):
+            database_url = database_url.replace('postgresql://', 'postgresql+psycopg://', 1)
         app.config['SQLALCHEMY_DATABASE_URI'] = database_url
     else:
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///waterlife_congo.db'
