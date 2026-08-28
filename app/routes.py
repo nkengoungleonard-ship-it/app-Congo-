@@ -481,6 +481,16 @@ def desactiver_commercial(id):
     return redirect(url_for('main.liste_commerciaux'))
 
 
+@main.route('/commerciaux/<int:id>/activer')
+@login_required
+def activer_commercial(id):
+    commercial = Commercial.query.get_or_404(id)
+    commercial.actif = True
+    db.session.commit()
+    flash("Commercial réactivé.", "success")
+    return redirect(url_for('main.liste_commerciaux'))
+
+
 @main.route('/commerciaux/<int:id>/promouvoir', methods=['POST'])
 @login_required
 def promouvoir_coordinateur(id):

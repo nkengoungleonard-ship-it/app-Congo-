@@ -49,6 +49,8 @@
                 <a href="{{ url_for('main.detail_commercial', id=c.id) }}" class="btn" style="padding:6px 12px; font-size:12px;">{{ t('btn_voir') }}</a>
                 {% if c.actif %}
                 <a href="{{ url_for('main.desactiver_commercial', id=c.id) }}" class="btn" style="padding:6px 12px; font-size:12px; background-color:var(--rouge);" onclick="return confirm('Désactiver ce commercial ?');">{{ t('btn_desactiver') }}</a>
+                {% else %}
+                <a href="{{ url_for('main.activer_commercial', id=c.id) }}" class="btn" style="padding:6px 12px; font-size:12px; background-color:#2e7d32;" onclick="return confirm('Réactiver ce commercial ?');">Activer</a>
                 {% endif %}
             </td>
         </tr>
