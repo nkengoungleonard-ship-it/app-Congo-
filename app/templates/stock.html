@@ -30,6 +30,7 @@
             <tr>
                 <th>N°</th>
                 <th>Produit</th>
+                 <th>Prix (FCFA)</th>
                 <th>Stock initial</th>
                 <th>Sorties</th>
                 <th>Stock actuel</th>
@@ -41,6 +42,7 @@
             <tr>
                 <td>{{ loop.index }}</td>
                 <td>{{ d.nom }}</td>
+                <td>{% if d.prix > 0 %}{{ '{:,.0f}'.format(d.prix).replace(',', ' ') }}{% else %}<span class="stock-badge stock-vide">À définir</span>{% endif %}</td>
                 <td>{{ d.stock_initial }}</td>
                 <td>{{ d.sorties }}</td>
                 <td>
@@ -53,6 +55,9 @@
                     <a href="{{ url_for('main.sortir_stock', id=d.id) }}" class="btn-mini btn-mini-sortie">− Sortie</a>
                     <a href="{{ url_for('main.modifier_stock', id=d.id) }}" class="btn-mini btn-mini-modifier">Modifier</a>
                     <a href="{{ url_for('main.historique_stock', id=d.id) }}" class="btn-mini btn-mini-historique">Historique</a>
+                    {% if current_user.est_super_admin %}
+                    <a href="{{ url_for('main.modifier_prix', id=d.id) }}" class="btn-mini btn-mini-modifier">Prix</a>
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}

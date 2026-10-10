@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Prix du produit - WaterLife Congo{% endblock %}
+{% block content %}
+
+<div class="form-page">
+    <h2>Prix — {{ produit.nom }}</h2>
+
+    <div class="modifier-stock-bloc">
+        <p class="stock-info-actuel">
+            Prix actuel :
+            <strong>{% if produit.prix_unitaire > 0 %}{{ '{:,.0f}'.format(produit.prix_unitaire).replace(',', ' ') }} FCFA{% else %}non défini{% endif %}</strong>
+        </p>
+        <form method="POST">
+            <div class="form-group">
+                <label>Nouveau prix de vente (FCFA)</label>
+                <input type="number" name="prix_unitaire" min="1" step="1"
+                       value="{{ '%.0f'|format(produit.prix_unitaire) if produit.prix_unitaire > 0 else '' }}" required>
+            </div>
+            <p class="stock-info-actuel">Le nouveau prix s'applique aux <strong>nouvelles ventes</strong> uniquement. Les ventes déjà enregistrées gardent leur montant.</p>
+            <button type="submit" class="btn btn-full">Enregistrer le prix</button>
+        </form>
+    </div>
+
+    <a href="{{ url_for('main.liste_stock') }}" class="btn-annuler">← Retour au stock</a>
+</div>
+
+{% endblock %}

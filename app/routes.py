@@ -545,6 +545,12 @@ def enregistrer_vente():
         quantite = int(request.form.get('quantite', 1))
 
         produit = Produit.query.get(produit_id)
+        if not produit or produit.prix_unitaire <= 0:
+            flash("Ce produit n'a pas encore de prix. Le Super Administrateur doit le définir (Stock → Prix).", "danger")
+            return redirect(url_for('main.enregistrer_vente'))
+        if quantite < 1:
+            flash("La quantité doit être au moins 1.", "danger")
+            return redirect(url_for('main.enregistrer_vente'))
         montant = produit.prix_unitaire * quantite
 
         vente = Vente(
@@ -582,12 +588,19 @@ def modifier_vente(id):
         BonusCoordinateur.query.filter_by(vente_id=vente.id).delete()
         BonusParrainage.query.filter_by(vente_id=vente.id).delete()
 
+        ancien_produit_id = vente.produit_id
+        prix_du_jour_de_vente = vente.montant / vente.quantite if vente.quantite else 0
+
         vente.commercial_id = request.form.get('commercial_id')
-        vente.produit_id = request.form.get('produit_id')
+        vente.produit_id = int(request.form.get('produit_id'))
         vente.quantite = int(request.form.get('quantite', 1))
 
-        produit = Produit.query.get(vente.produit_id)
-        vente.montant = produit.prix_unitaire * vente.quantite
+        if vente.produit_id == ancien_produit_id:
+            # Même produit : on garde le prix en vigueur le jour de la vente
+            prix = prix_du_jour_de_vente
+        else:
+            prix = Produit.query.get_or_404(vente.produit_id).prix_unitaire
+        vente.montant = prix * vente.quantite
 
         vente.calculer_commission()
         vente.calculer_bonus_coordinateur()
@@ -725,7 +738,8 @@ def calculer_donnees_stock(debut, fin):
             'nom': p.nom,
             'stock_initial': p.stock_initial,
             'sorties': sorties,
-            'stock_actuel': p.stock_actuel
+            'stock_actuel': p.stock_actuel,
+            'prix': p.prix_unitaire
         })
     return donnees
 
@@ -861,7 +875,32 @@ def modifier_stock(id):
 
     return render_template('modifier_stock.html', produit=produit)
 
+@main.route('/produits/<int:id>/prix', methods=['GET', 'POST'])
+@login_required
+@super_admin_required
+def modifier_prix(id):
+    produit = Produit.query.get_or_404(id)
 
+    if request.method == 'POST':
+        saisie = (request.form.get('prix_unitaire') or '').replace(' ', '').replace(',', '.')
+        try:
+            nouveau_prix = float(saisie)
+        except ValueError:
+            nouveau_prix = None
+        if nouveau_prix is None or not (0 < nouveau_prix <= 10000000):
+            flash("Prix invalide : saisissez un montant en FCFA supérieur à 0.", "danger")
+            return redirect(url_for('main.modifier_prix', id=id))
+
+        ancien_prix = produit.prix_unitaire
+        produit.prix_unitaire = nouveau_prix
+        db.session.commit()
+        logging.getLogger('securite').warning(
+            f"PRIX MODIFIE - {produit.nom} : {ancien_prix:.0f} -> {nouveau_prix:.0f} FCFA par {current_user.email}"
+        )
+        flash(f"Prix de {produit.nom} : {nouveau_prix:.0f} FCFA (s'applique aux nouvelles ventes).", "success")
+        return redirect(url_for('main.liste_stock'))
+
+    return render_template('modifier_prix.html', produit=produit)
 @main.route('/stock/<int:id>/historique')
 @login_required
 def historique_stock(id):

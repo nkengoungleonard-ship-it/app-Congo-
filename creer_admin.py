@@ -6,7 +6,11 @@ app = create_app()
 with app.app_context():
     email = input("Email de l'administrateur : ")
     nom = input("Nom de l'administrateur : ")
-    mot_de_passe = input("Mot de passe : ")
+    from getpass import getpass
+    mot_de_passe = getpass("Mot de passe (invisible a la saisie) : ")
+    if len(mot_de_passe) < 10:
+        print("Mot de passe trop court (10 caracteres minimum). Rien n'a ete cree.")
+        raise SystemExit(1)
 
     existant = Administrateur.query.filter_by(email=email).first()
     if existant:
