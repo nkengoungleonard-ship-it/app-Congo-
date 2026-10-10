@@ -22,3 +22,5 @@ env/
 # OS
 .DS_Store
 Thumbs.db
+# Photos des commerciaux (données personnelles, jamais sur GitHub)
+app/static/uploads/
