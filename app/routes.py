@@ -540,10 +540,13 @@ def enregistrer_vente():
     produits = Produit.query.all()
 
     if request.method == 'POST':
-        commercial_id = request.form.get('commercial_id')
-        produit_id = request.form.get('produit_id')
-        quantite = int(request.form.get('quantite', 1))
-
+        try:
+            commercial_id = int(request.form.get('commercial_id', ''))
+            produit_id = int(request.form.get('produit_id', ''))
+            quantite = int(request.form.get('quantite', 1))
+        except (TypeError, ValueError):
+            flash("Formulaire invalide : vérifiez le commercial, le produit et la quantité.", "danger")
+            return redirect(url_for('main.enregistrer_vente'))
         produit = Produit.query.get(produit_id)
         if not produit or produit.prix_unitaire <= 0:
             flash("Ce produit n'a pas encore de prix. Le Super Administrateur doit le définir (Stock → Prix).", "danger")
@@ -591,7 +594,7 @@ def modifier_vente(id):
         ancien_produit_id = vente.produit_id
         prix_du_jour_de_vente = vente.montant / vente.quantite if vente.quantite else 0
 
-        vente.commercial_id = request.form.get('commercial_id')
+        vente.commercial_id = int(request.form.get('commercial_id'))
         vente.produit_id = int(request.form.get('produit_id'))
         vente.quantite = int(request.form.get('quantite', 1))
 
@@ -646,9 +649,13 @@ def ajouter_vente_gros():
         client_nom = request.form.get('client_nom')
         client_type = request.form.get('client_type')
         client_contact = request.form.get('client_contact')
-        produit_id = request.form.get('produit_id')
-        quantite = int(request.form.get('quantite', 1))
-        montant_total = float(request.form.get('montant_total'))
+        try:
+            produit_id = int(request.form.get('produit_id', ''))
+            quantite = int(request.form.get('quantite', 1))
+            montant_total = float(request.form.get('montant_total'))
+        except (TypeError, ValueError):
+            flash("Formulaire invalide : vérifiez le produit, la quantité et le montant.", "danger")
+            return redirect(url_for('main.ajouter_vente_gros'))
         notes = request.form.get('notes')
 
         vente_gros = VenteEnGros(
